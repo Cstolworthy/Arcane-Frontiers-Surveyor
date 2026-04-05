@@ -1,0 +1,7 @@
+{
+  "modmenu.nameTranslation.surveyor": "Surveyor",
+  "item.surveyor.atlas": "Surveyor Atlas",
+  "screen.surveyor.atlas.title": "Surveyor Atlas",
+  "screen.surveyor.atlas.discovered_chunks": "Discovered Chunks",
+  "screen.surveyor.atlas.empty": "Walk around while holding the atlas to record terrain"
+}
