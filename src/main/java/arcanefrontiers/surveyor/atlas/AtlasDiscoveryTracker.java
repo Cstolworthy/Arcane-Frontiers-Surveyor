@@ -29,7 +29,8 @@ public final class AtlasDiscoveryTracker {
         }
 
         ChunkPos chunkPos = serverPlayer.chunkPosition();
-        AtlasData.addDiscoveredChunk(atlasStack, chunkPos.x, chunkPos.z);
+        int chunkColor = AtlasColorSampler.sampleChunkColor(serverPlayer.level(), chunkPos.x, chunkPos.z);
+        AtlasData.addDiscoveredChunk(atlasStack, chunkPos.x, chunkPos.z, chunkColor);
     }
 
     private static ItemStack findHeldAtlas(ServerPlayer player) {

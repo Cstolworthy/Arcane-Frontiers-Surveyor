@@ -1,6 +1,7 @@
 package arcanefrontiers.surveyor.command;
 
 import arcanefrontiers.surveyor.atlas.AtlasData;
+import arcanefrontiers.surveyor.atlas.AtlasColorSampler;
 import arcanefrontiers.surveyor.item.AtlasItem;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -84,7 +85,8 @@ public final class SurveyorDebugCommands {
         int discovered = 0;
         for (int chunkX = center.x - radius; chunkX <= center.x + radius; chunkX++) {
             for (int chunkZ = center.z - radius; chunkZ <= center.z + radius; chunkZ++) {
-                if (AtlasData.addDiscoveredChunk(atlas, chunkX, chunkZ)) {
+                int color = AtlasColorSampler.sampleChunkColor(player.level(), chunkX, chunkZ);
+                if (AtlasData.addDiscoveredChunk(atlas, chunkX, chunkZ, color)) {
                     discovered++;
                 }
             }

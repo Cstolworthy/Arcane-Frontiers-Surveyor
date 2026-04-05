@@ -17,7 +17,7 @@ public final class AtlasOverlayRenderer {
     private static final int MAP_RADIUS_CHUNKS = 40;
     private static final int MAP_BACKGROUND = 0xC0101010;
     private static final int MAP_BORDER = 0xFFB08C5A;
-    private static final int DISCOVERED_COLOR = 0xFF3D8B5A;
+    private static final int DISCOVERED_FALLBACK_COLOR = 0xFF3D8B5A;
     private static final int PLAYER_COLOR = 0xFFFFE46A;
     private static final int SCREEN_OVERLAY = 0x50000000;
 
@@ -66,7 +66,9 @@ public final class AtlasOverlayRenderer {
         int centerChunkZ = AtlasData.getCenterChunkZ(atlasStack, playerChunkZ);
 
         long[] discoveredChunks = AtlasData.getDiscoveredChunks(atlasStack);
-        for (long packedChunk : discoveredChunks) {
+        int[] discoveredColors = AtlasData.getDiscoveredChunkColors(atlasStack);
+        for (int index = 0; index < discoveredChunks.length; index++) {
+            long packedChunk = discoveredChunks[index];
             int chunkX = ChunkPos.getX(packedChunk);
             int chunkZ = ChunkPos.getZ(packedChunk);
             int relativeX = chunkX - centerChunkX;
@@ -78,7 +80,8 @@ public final class AtlasOverlayRenderer {
 
             int renderX = mapLeft + ((relativeX + MAP_RADIUS_CHUNKS) * tileSize);
             int renderY = mapTop + ((relativeZ + MAP_RADIUS_CHUNKS) * tileSize);
-            guiGraphics.fill(renderX, renderY, renderX + tileSize, renderY + tileSize, DISCOVERED_COLOR);
+            int color = index < discoveredColors.length ? discoveredColors[index] : DISCOVERED_FALLBACK_COLOR;
+            guiGraphics.fill(renderX, renderY, renderX + tileSize, renderY + tileSize, color);
         }
 
         int playerTileX = mapLeft + (MAP_RADIUS_CHUNKS * tileSize);
