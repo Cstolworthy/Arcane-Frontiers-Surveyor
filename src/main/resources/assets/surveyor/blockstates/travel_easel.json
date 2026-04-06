@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "has_compass=false,has_quill=false,has_sextant=false": { "model": "surveyor:block/travel_easel" },
+    "has_compass=true,has_quill=false,has_sextant=false": { "model": "surveyor:block/travel_easel" },
+    "has_compass=false,has_quill=true,has_sextant=false": { "model": "surveyor:block/travel_easel" },
+    "has_compass=false,has_quill=false,has_sextant=true": { "model": "surveyor:block/travel_easel" },
+    "has_compass=true,has_quill=true,has_sextant=false": { "model": "surveyor:block/travel_easel" },
+    "has_compass=true,has_quill=false,has_sextant=true": { "model": "surveyor:block/travel_easel" },
+    "has_compass=false,has_quill=true,has_sextant=true": { "model": "surveyor:block/travel_easel" },
+    "has_compass=true,has_quill=true,has_sextant=true": { "model": "surveyor:block/travel_easel" }
+  }
+}

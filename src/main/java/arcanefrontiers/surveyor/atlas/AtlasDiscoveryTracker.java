@@ -7,9 +7,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 public final class AtlasDiscoveryTracker {
-    private static final int DISCOVERY_INTERVAL_TICKS = 20;
-    private static final int FALLBACK_REVEAL_RADIUS_CHUNKS = 6;
-
     private AtlasDiscoveryTracker() {
     }
 
@@ -22,12 +19,16 @@ public final class AtlasDiscoveryTracker {
             return;
         }
 
-        if (serverPlayer.tickCount % DISCOVERY_INTERVAL_TICKS != 0) {
+        if (serverPlayer.tickCount % AtlasSettings.active().discoveryIntervalTicks() != 0) {
             return;
         }
 
         ItemStack atlasStack = findHeldAtlas(serverPlayer);
         if (atlasStack.isEmpty()) {
+            return;
+        }
+
+        if (AtlasUpdateRules.getServerStatus(serverPlayer) != AtlasUpdateRules.UpdateStatus.READY) {
             return;
         }
 
@@ -49,12 +50,12 @@ public final class AtlasDiscoveryTracker {
 
     private static int getRevealRadiusChunks(ServerPlayer player) {
         if (player.getServer() == null) {
-            return FALLBACK_REVEAL_RADIUS_CHUNKS;
+            return AtlasSettings.active().fallbackRevealRadiusChunks();
         }
 
         int viewDistance = player.getServer().getPlayerList().getViewDistance();
         if (viewDistance <= 0) {
-            return FALLBACK_REVEAL_RADIUS_CHUNKS;
+            return AtlasSettings.active().fallbackRevealRadiusChunks();
         }
 
         return Math.max(1, viewDistance - 1);

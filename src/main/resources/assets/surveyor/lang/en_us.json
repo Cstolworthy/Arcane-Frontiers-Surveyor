@@ -1,9 +1,21 @@
 {
   "modmenu.nameTranslation.surveyor": "Surveyor",
   "item.surveyor.atlas": "Surveyor Atlas",
+  "item.surveyor.sextant": "Sextant",
+  "item.surveyor.pen_quill": "Pen and Quill",
+  "item.surveyor.travel_easel": "Travel Easel",
+  "block.surveyor.travel_easel": "Travel Easel",
   "screen.surveyor.atlas.title": "Surveyor Atlas",
   "screen.surveyor.atlas.discovered_chunks": "Discovered Chunks",
+  "screen.surveyor.atlas.scale": "Scale",
   "screen.surveyor.atlas.empty_maps": "Empty Maps",
   "screen.surveyor.atlas.consumed_maps": "Consumed Maps",
-  "screen.surveyor.atlas.empty": "Walk around while holding the atlas to record terrain"
+  "screen.surveyor.atlas.update_status.ready": "Atlas updates: ready",
+  "screen.surveyor.atlas.update_status.moving": "Atlas updates: stand still",
+  "screen.surveyor.atlas.update_status.no_easel": "Atlas updates: place a travel easel nearby",
+  "screen.surveyor.atlas.update_status.missing_tools": "Atlas updates: load sextant, compass, and pen/quill",
+  "screen.surveyor.atlas.empty": "Walk around while holding the atlas to record terrain",
+  "key.categories.surveyor": "Surveyor",
+  "key.surveyor.atlas_zoom_out": "Atlas Zoom Out",
+  "key.surveyor.atlas_zoom_in": "Atlas Zoom In"
 }

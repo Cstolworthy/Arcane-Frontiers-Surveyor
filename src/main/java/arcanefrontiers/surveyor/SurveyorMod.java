@@ -2,6 +2,7 @@ package arcanefrontiers.surveyor;
 
 import arcanefrontiers.surveyor.atlas.AtlasDiscoveryTracker;
 import arcanefrontiers.surveyor.command.SurveyorDebugCommands;
+import arcanefrontiers.surveyor.registry.SurveyorBlocks;
 import arcanefrontiers.surveyor.registry.SurveyorItems;
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
@@ -16,6 +17,7 @@ public final class SurveyorMod {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public SurveyorMod(IEventBus modEventBus, ModContainer modContainer) {
+        SurveyorBlocks.register(modEventBus);
         SurveyorItems.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(AtlasDiscoveryTracker::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(SurveyorDebugCommands::onRegisterCommands);

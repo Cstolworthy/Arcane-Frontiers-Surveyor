@@ -92,8 +92,9 @@ public final class AtlasData {
         CompoundTag tag = getCustomDataTag(atlasStack);
         initializeMapCounters(tag);
 
-        int pageX = Math.floorDiv(chunkX, AtlasMapLayout.PAGE_SIZE_CHUNKS);
-        int pageZ = Math.floorDiv(chunkZ, AtlasMapLayout.PAGE_SIZE_CHUNKS);
+        int pageSizeChunks = AtlasMapLayout.pageSizeChunks();
+        int pageX = Math.floorDiv(chunkX, pageSizeChunks);
+        int pageZ = Math.floorDiv(chunkZ, pageSizeChunks);
         long packedPage = ChunkPos.asLong(pageX, pageZ);
 
         long[] unlockedPages = tag.getLongArray(TAG_UNLOCKED_PAGES);
