@@ -3,5 +3,7 @@
   "item.surveyor.atlas": "Surveyor Atlas",
   "screen.surveyor.atlas.title": "Surveyor Atlas",
   "screen.surveyor.atlas.discovered_chunks": "Discovered Chunks",
+  "screen.surveyor.atlas.empty_maps": "Empty Maps",
+  "screen.surveyor.atlas.consumed_maps": "Consumed Maps",
   "screen.surveyor.atlas.empty": "Walk around while holding the atlas to record terrain"
 }

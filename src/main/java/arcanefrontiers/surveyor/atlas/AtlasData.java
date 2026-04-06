@@ -3,6 +3,7 @@ package arcanefrontiers.surveyor.atlas;
 import java.util.Arrays;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.ChunkPos;
@@ -10,10 +11,15 @@ import net.minecraft.world.level.ChunkPos;
 public final class AtlasData {
     private static final String TAG_DISCOVERED_CHUNKS = "SurveyorDiscoveredChunks";
     private static final String TAG_DISCOVERED_COLORS = "SurveyorDiscoveredChunkColors";
+    private static final String TAG_UNLOCKED_PAGES = "SurveyorUnlockedPages";
+    private static final String TAG_EMPTY_MAPS = "SurveyorEmptyMaps";
+    private static final String TAG_CONSUMED_MAPS = "SurveyorConsumedMaps";
     private static final String TAG_CENTER_X = "SurveyorCenterChunkX";
     private static final String TAG_CENTER_Z = "SurveyorCenterChunkZ";
     private static final int MAX_STORED_CHUNKS = 262144;
+    private static final int MAX_STORED_PAGES = 4096;
     private static final int DEFAULT_CHUNK_COLOR = 0xFF3D8B5A;
+    private static final int DEFAULT_INITIAL_EMPTY_MAPS = 16;
 
     private AtlasData() {
     }
@@ -82,6 +88,71 @@ public final class AtlasData {
         atlasStack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
     }
 
+    public static boolean ensurePageAvailable(ItemStack atlasStack, Player player, int chunkX, int chunkZ) {
+        CompoundTag tag = getCustomDataTag(atlasStack);
+        initializeMapCounters(tag);
+
+        int pageX = Math.floorDiv(chunkX, AtlasMapLayout.PAGE_SIZE_CHUNKS);
+        int pageZ = Math.floorDiv(chunkZ, AtlasMapLayout.PAGE_SIZE_CHUNKS);
+        long packedPage = ChunkPos.asLong(pageX, pageZ);
+
+        long[] unlockedPages = tag.getLongArray(TAG_UNLOCKED_PAGES);
+
+        if (unlockedPages.length == 0) {
+            tag.putLongArray(TAG_UNLOCKED_PAGES, new long[]{packedPage});
+            atlasStack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+            return true;
+        }
+
+        for (long unlockedPage : unlockedPages) {
+            if (unlockedPage == packedPage) {
+                return true;
+            }
+        }
+
+        if (!player.getAbilities().instabuild && !consumeInternalEmptyMap(tag)) {
+            atlasStack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+            return false;
+        }
+
+        long[] updatedPages;
+        if (unlockedPages.length >= MAX_STORED_PAGES) {
+            updatedPages = new long[MAX_STORED_PAGES];
+            System.arraycopy(unlockedPages, 1, updatedPages, 0, MAX_STORED_PAGES - 1);
+            updatedPages[MAX_STORED_PAGES - 1] = packedPage;
+        } else {
+            updatedPages = Arrays.copyOf(unlockedPages, unlockedPages.length + 1);
+            updatedPages[updatedPages.length - 1] = packedPage;
+        }
+
+        tag.putLongArray(TAG_UNLOCKED_PAGES, updatedPages);
+        atlasStack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        return true;
+    }
+
+    public static int getEmptyMaps(ItemStack atlasStack) {
+        CompoundTag tag = getCustomDataTag(atlasStack);
+        initializeMapCounters(tag);
+        return tag.getInt(TAG_EMPTY_MAPS);
+    }
+
+    public static int getConsumedMaps(ItemStack atlasStack) {
+        CompoundTag tag = getCustomDataTag(atlasStack);
+        initializeMapCounters(tag);
+        return tag.getInt(TAG_CONSUMED_MAPS);
+    }
+
+    public static void addEmptyMaps(ItemStack atlasStack, int amount) {
+        if (amount <= 0) {
+            return;
+        }
+
+        CompoundTag tag = getCustomDataTag(atlasStack);
+        initializeMapCounters(tag);
+        tag.putInt(TAG_EMPTY_MAPS, tag.getInt(TAG_EMPTY_MAPS) + amount);
+        atlasStack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+    }
+
     public static long[] getDiscoveredChunks(ItemStack atlasStack) {
         CompoundTag tag = getCustomDataTag(atlasStack);
         return tag.getLongArray(TAG_DISCOVERED_CHUNKS);
@@ -130,5 +201,25 @@ public final class AtlasData {
     private static CompoundTag getCustomDataTag(ItemStack stack) {
         CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
         return customData.copyTag();
+    }
+
+    private static void initializeMapCounters(CompoundTag tag) {
+        if (!tag.contains(TAG_EMPTY_MAPS)) {
+            tag.putInt(TAG_EMPTY_MAPS, DEFAULT_INITIAL_EMPTY_MAPS);
+        }
+        if (!tag.contains(TAG_CONSUMED_MAPS)) {
+            tag.putInt(TAG_CONSUMED_MAPS, 0);
+        }
+    }
+
+    private static boolean consumeInternalEmptyMap(CompoundTag tag) {
+        int emptyMaps = tag.getInt(TAG_EMPTY_MAPS);
+        if (emptyMaps <= 0) {
+            return false;
+        }
+
+        tag.putInt(TAG_EMPTY_MAPS, emptyMaps - 1);
+        tag.putInt(TAG_CONSUMED_MAPS, tag.getInt(TAG_CONSUMED_MAPS) + 1);
+        return true;
     }
 }

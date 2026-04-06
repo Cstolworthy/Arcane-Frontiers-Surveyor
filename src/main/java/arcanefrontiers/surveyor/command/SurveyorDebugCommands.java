@@ -19,9 +19,11 @@ public final class SurveyorDebugCommands {
     private static final Component ROOT_HELP_LINE_1 = Component.literal("- /arcanefrontiers help");
     private static final Component ROOT_HELP_LINE_2 = Component.literal("- /arcanefrontiers debug help");
     private static final Component ROOT_HELP_LINE_3 = Component.literal("- /arcanefrontiers debug revealmap <radius>");
+    private static final Component ROOT_HELP_LINE_4 = Component.literal("- /arcanefrontiers debug addmaps <count>");
     private static final Component DEBUG_HELP_HEADER = Component.literal("Arcane Frontiers Surveyor debug commands:");
     private static final Component DEBUG_HELP_LINE_1 = Component.literal("- /arcanefrontiers debug help");
     private static final Component DEBUG_HELP_LINE_2 = Component.literal("- /arcanefrontiers debug revealmap <radius>");
+    private static final Component DEBUG_HELP_LINE_3 = Component.literal("- /arcanefrontiers debug addmaps <count>");
 
     private SurveyorDebugCommands() {
     }
@@ -43,6 +45,11 @@ public final class SurveyorDebugCommands {
                 .then(Commands.literal("help")
                     .executes(SurveyorDebugCommands::sendDebugHelp)
                 )
+                .then(Commands.literal("addmaps")
+                    .then(Commands.argument("count", IntegerArgumentType.integer(1, 100000))
+                        .executes(SurveyorDebugCommands::addMaps)
+                    )
+                )
                 .then(Commands.literal("revealmap")
                     .then(Commands.argument("radius", IntegerArgumentType.integer(1, 512))
                         .executes(SurveyorDebugCommands::revealMap)
@@ -57,6 +64,7 @@ public final class SurveyorDebugCommands {
         source.sendSuccess(() -> ROOT_HELP_LINE_1, false);
         source.sendSuccess(() -> ROOT_HELP_LINE_2, false);
         source.sendSuccess(() -> ROOT_HELP_LINE_3, false);
+        source.sendSuccess(() -> ROOT_HELP_LINE_4, false);
         return 1;
     }
 
@@ -65,7 +73,26 @@ public final class SurveyorDebugCommands {
         source.sendSuccess(() -> DEBUG_HELP_HEADER, false);
         source.sendSuccess(() -> DEBUG_HELP_LINE_1, false);
         source.sendSuccess(() -> DEBUG_HELP_LINE_2, false);
+        source.sendSuccess(() -> DEBUG_HELP_LINE_3, false);
         return 1;
+    }
+
+    private static int addMaps(CommandContext<CommandSourceStack> context) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        CommandSourceStack source = context.getSource();
+        ServerPlayer player = source.getPlayerOrException();
+        int count = IntegerArgumentType.getInteger(context, "count");
+
+        ItemStack atlas = findHeldAtlas(player);
+        if (atlas.isEmpty()) {
+            source.sendFailure(Component.literal("Hold a Surveyor Atlas in your main hand or offhand."));
+            return 0;
+        }
+
+        AtlasData.addEmptyMaps(atlas, count);
+        int emptyMaps = AtlasData.getEmptyMaps(atlas);
+        int consumedMaps = AtlasData.getConsumedMaps(atlas);
+        source.sendSuccess(() -> Component.literal("Surveyor addmaps complete: added=" + count + ", empty maps=" + emptyMaps + ", consumed maps=" + consumedMaps), false);
+        return count;
     }
 
     private static int revealMap(CommandContext<CommandSourceStack> context) throws com.mojang.brigadier.exceptions.CommandSyntaxException {

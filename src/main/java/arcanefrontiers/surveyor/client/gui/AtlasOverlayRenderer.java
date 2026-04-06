@@ -1,6 +1,7 @@
 package arcanefrontiers.surveyor.client.gui;
 
 import arcanefrontiers.surveyor.atlas.AtlasData;
+import arcanefrontiers.surveyor.atlas.AtlasMapLayout;
 import arcanefrontiers.surveyor.client.SurveyorClientAccess;
 import arcanefrontiers.surveyor.item.AtlasItem;
 import net.minecraft.client.Minecraft;
@@ -14,7 +15,9 @@ public final class AtlasOverlayRenderer {
     private static final Component TITLE = Component.translatable("screen.surveyor.atlas.title");
     private static final Component EMPTY_DESCRIPTION = Component.translatable("screen.surveyor.atlas.empty");
     private static final Component CHUNKS_LABEL = Component.translatable("screen.surveyor.atlas.discovered_chunks");
-    private static final int MAP_RADIUS_CHUNKS = 40;
+    private static final Component EMPTY_MAPS_LABEL = Component.translatable("screen.surveyor.atlas.empty_maps");
+    private static final Component CONSUMED_MAPS_LABEL = Component.translatable("screen.surveyor.atlas.consumed_maps");
+    private static final int MAP_RADIUS_CHUNKS = AtlasMapLayout.PAGE_RADIUS_CHUNKS;
     private static final int MAP_BACKGROUND = 0xC0101010;
     private static final int MAP_BORDER = 0xFFB08C5A;
     private static final int DISCOVERED_FALLBACK_COLOR = 0xFF3D8B5A;
@@ -90,9 +93,11 @@ public final class AtlasOverlayRenderer {
 
         guiGraphics.drawCenteredString(minecraft.font, TITLE, centerX, mapTop - 22, 0xFFFFFF);
         guiGraphics.drawCenteredString(minecraft.font, CHUNKS_LABEL.copy().append(": " + AtlasData.getDiscoveredCount(atlasStack)), centerX, mapBottom + 8, 0xD0D0D0);
+        guiGraphics.drawCenteredString(minecraft.font, EMPTY_MAPS_LABEL.copy().append(": " + AtlasData.getEmptyMaps(atlasStack)), centerX, mapBottom + 20, 0xCFE8CF);
+        guiGraphics.drawCenteredString(minecraft.font, CONSUMED_MAPS_LABEL.copy().append(": " + AtlasData.getConsumedMaps(atlasStack)), centerX, mapBottom + 32, 0xE8CFCF);
 
         if (discoveredChunks.length == 0) {
-            guiGraphics.drawCenteredString(minecraft.font, EMPTY_DESCRIPTION, centerX, mapBottom + 20, 0xC0C0C0);
+            guiGraphics.drawCenteredString(minecraft.font, EMPTY_DESCRIPTION, centerX, mapBottom + 44, 0xC0C0C0);
         }
     }
 
